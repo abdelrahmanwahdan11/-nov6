@@ -67,6 +67,20 @@ class _MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage('Dark mode disabled'),
         'dark_mode_on':
             MessageLookupByLibrary.simpleMessage('Dark mode enabled'),
+        'simulate_no_internet':
+            MessageLookupByLibrary.simpleMessage('Simulate No Internet'),
+        'offline_mode_active': MessageLookupByLibrary.simpleMessage(
+            'Offline simulation enabled'),
+        'offline_mode_inactive': MessageLookupByLibrary.simpleMessage(
+            'Offline simulation disabled'),
+        'offline_action_queued': MessageLookupByLibrary.simpleMessage(
+            'Action queued while offline'),
+        'offline_sync_complete': MessageLookupByLibrary.simpleMessage(
+            'Pending actions synced'),
+        'export_my_data':
+            MessageLookupByLibrary.simpleMessage('Export My Data'),
+        'export_data_title':
+            MessageLookupByLibrary.simpleMessage('Your Data Export'),
         'created_by': m2,
         'my_polls': MessageLookupByLibrary.simpleMessage('My Polls'),
         'done': MessageLookupByLibrary.simpleMessage('Done'),

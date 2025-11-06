@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/poll_providers.dart';
+import '../../providers/offline_providers.dart';
 import '../../repositories/mock_poll_repository.dart';
 import '../../theme/app_theme.dart';
 import 'poll_settings_page.dart';
@@ -100,6 +101,24 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
     });
 
     try {
+      final bool offlineMode = ref.read(offlineModeProvider);
+      if (offlineMode) {
+        await ref.read(actionQueueServiceProvider).enqueueCreatePoll(
+              question: question,
+              optionTexts: options,
+              durationMinutes: _settings.duration.inMinutes,
+              authorId: currentUser.id,
+              authorName: currentUser.name,
+              category: _selectedCategory,
+            );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.offlineActionQueued)),
+          );
+        }
+        return;
+      }
+
       final MockPollRepository repository = ref.read(mockPollRepositoryProvider);
       final poll = await repository.createPoll(
         question: question,

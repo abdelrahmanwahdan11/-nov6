@@ -473,6 +473,41 @@ class AppLocalizations {
         name: 'dark_mode_off',
       );
 
+  String get simulateNoInternet => Intl.message(
+        'Simulate No Internet',
+        name: 'simulate_no_internet',
+      );
+
+  String get offlineModeActive => Intl.message(
+        'Offline simulation enabled',
+        name: 'offline_mode_active',
+      );
+
+  String get offlineModeInactive => Intl.message(
+        'Offline simulation disabled',
+        name: 'offline_mode_inactive',
+      );
+
+  String get offlineActionQueued => Intl.message(
+        'Action queued while offline',
+        name: 'offline_action_queued',
+      );
+
+  String get offlineSyncComplete => Intl.message(
+        'Pending actions synced',
+        name: 'offline_sync_complete',
+      );
+
+  String get exportMyData => Intl.message(
+        'Export My Data',
+        name: 'export_my_data',
+      );
+
+  String get exportDataTitle => Intl.message(
+        'Your Data Export',
+        name: 'export_data_title',
+      );
+
   String get logout => Intl.message(
         'Logout',
         name: 'logout',

@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'config/app_router.dart';
 import 'l10n/app_localizations.dart';
+import 'models/action_queue_item.dart';
 import 'models/poll.dart';
 import 'models/poll_option.dart';
 import 'models/user.dart';
@@ -24,12 +25,14 @@ Future<void> main() async {
   Hive.registerAdapter(UserMockAdapter());
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(UserVoteAdapter());
+  Hive.registerAdapter(ActionQueueItemAdapter());
 
   await Hive.openBox<Poll>(pollsBoxName);
   await Hive.openBox<UserVote>(votesBoxName);
   await Hive.openBox<UserMock>(usersBoxName);
   await Hive.openBox<User>(usersAuthBoxName);
   await Hive.openBox<dynamic>(authSessionBoxName);
+  await Hive.openBox<ActionQueueItem>(actionQueueBoxName);
 
   final MockPollRepository repository = MockPollRepository(
     Hive.box<Poll>(pollsBoxName),

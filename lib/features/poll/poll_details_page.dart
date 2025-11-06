@@ -7,6 +7,7 @@ import '../../models/poll.dart';
 import '../../models/user_vote.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/poll_providers.dart';
+import '../../providers/offline_providers.dart';
 import '../../repositories/mock_poll_repository.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/poll_option_tile.dart';
@@ -92,10 +93,28 @@ class _PollDetailsPageState extends ConsumerState<PollDetailsPage> {
     if (_selectedOptionId == null) {
       return;
     }
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final currentUser = ref.read(currentUserProvider);
     final bool isGuest = ref.read(isGuestProvider);
     if (currentUser == null || isGuest) {
       _showAuthDialog();
+      return;
+    }
+    final bool offlineMode = ref.read(offlineModeProvider);
+    if (offlineMode) {
+      await ref.read(actionQueueServiceProvider).enqueueVote(
+            pollId: poll.id,
+            optionId: _selectedOptionId!,
+            userId: currentUser.id,
+          );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.offlineActionQueued)),
+        );
+        setState(() {
+          _selectedOptionId = null;
+        });
+      }
       return;
     }
     final repository = ref.read(mockPollRepositoryProvider);

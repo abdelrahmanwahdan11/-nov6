@@ -64,8 +64,22 @@ class _MessageLookup extends MessageLookupByLibrary {
             'ابدأ بالكتابة لاستكشاف الاستطلاعات في جميع الفئات.'),
         'search_title': MessageLookupByLibrary.simpleMessage('بحث'),
         'dark_mode': MessageLookupByLibrary.simpleMessage('الوضع الليلي'),
-        'dark_mode_off': MessageLookupByLibrary.simpleMessage('الوضع الليلي متوقف'),
-        'dark_mode_on': MessageLookupByLibrary.simpleMessage('الوضع الليلي مفعل'),
+        'dark_mode_off':
+            MessageLookupByLibrary.simpleMessage('الوضع الليلي متوقف'),
+        'dark_mode_on':
+            MessageLookupByLibrary.simpleMessage('الوضع الليلي مفعل'),
+        'simulate_no_internet': MessageLookupByLibrary.simpleMessage(
+            'محاكاة عدم الاتصال بالإنترنت'),
+        'offline_mode_active': MessageLookupByLibrary.simpleMessage(
+            'تم تفعيل محاكاة عدم الاتصال'),
+        'offline_mode_inactive': MessageLookupByLibrary.simpleMessage(
+            'تم إيقاف محاكاة عدم الاتصال'),
+        'offline_action_queued': MessageLookupByLibrary.simpleMessage(
+            'تمت جدولة الإجراء أثناء عدم الاتصال'),
+        'offline_sync_complete': MessageLookupByLibrary.simpleMessage(
+            'تمت مزامنة الإجراءات المعلقة'),
+        'export_my_data': MessageLookupByLibrary.simpleMessage('تصدير بياناتي'),
+        'export_data_title': MessageLookupByLibrary.simpleMessage('تصدير بياناتك'),
         'created_by': m2,
         'my_polls': MessageLookupByLibrary.simpleMessage('استطلاعاتي'),
         'done': MessageLookupByLibrary.simpleMessage('تم'),

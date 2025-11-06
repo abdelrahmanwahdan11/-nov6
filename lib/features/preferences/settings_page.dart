@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../providers/app_providers.dart';
+import '../../providers/offline_providers.dart';
 import '../../repositories/mock_auth_repository.dart';
 import '../../theme/app_theme.dart';
 import '../auth/auth_page.dart';
@@ -20,10 +21,12 @@ class SettingsPage extends ConsumerWidget {
     final ThemeMode themeMode = ref.watch(themeProvider);
     final Locale locale = ref.watch(localeProvider);
     final AsyncValue<AuthState> authState = ref.watch(authStatusProvider);
+    final bool offlineModeEnabled = ref.watch(offlineModeProvider);
     final bool isAuthed = authState.maybeWhen(
       data: (AuthState state) => state.isAuthenticated,
       orElse: () => false,
     );
+    final bool isGuest = ref.watch(isGuestProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -89,6 +92,109 @@ class SettingsPage extends ConsumerWidget {
                     inactiveTrackColor: Colors.white,
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              l10n.simulateNoInternet,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.black, width: 3),
+              ),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      offlineModeEnabled
+                          ? l10n.offlineModeActive
+                          : l10n.offlineModeInactive,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  Switch(
+                    value: offlineModeEnabled,
+                    onChanged: (bool value) async {
+                      ref.read(offlineModeProvider.notifier).state = value;
+                      if (!value) {
+                        await ref.read(mockSyncServiceProvider).processQueue();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.offlineSyncComplete)),
+                          );
+                        }
+                      }
+                    },
+                    activeColor: AppTheme.primaryColor,
+                    inactiveThumbColor: Colors.black,
+                    inactiveTrackColor: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  side: const BorderSide(color: Colors.black, width: 3),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: (!isAuthed || isGuest)
+                    ? null
+                    : () async {
+                        final user = ref.read(currentUserProvider);
+                        if (user == null) {
+                          return;
+                        }
+                        final String json = await ref
+                            .read(exportDataServiceProvider)
+                            .generateUserJson(user.id);
+                        if (!context.mounted) return;
+                        await showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(l10n.exportDataTitle),
+                              content: SizedBox(
+                                width: double.maxFinite,
+                                child: SingleChildScrollView(
+                                  child: SelectableText(
+                                    json,
+                                    style: const TextStyle(
+                                      fontFamily: 'monospace',
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: Text(l10n.done),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                child: Text(
+                  l10n.exportMyData,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             const Spacer(),
