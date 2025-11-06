@@ -13,6 +13,7 @@ class _MessageLookup extends MessageLookupByLibrary {
   static String m2(Object author) => 'By $author';
   static String m3(Object hours) => '$hours' 'h left';
   static String m4(Object message) => 'Error $message';
+  static String m5(Object query) => 'No results for "$query"';
 
   @override
   final Map<String, Function> messages = _notInlinedMessages();
@@ -33,23 +34,41 @@ class _MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage('Collect ideas!'),
         'collect_ideas_subtitle': MessageLookupByLibrary.simpleMessage(
             'Collect feedback with punchy brutalist polls.'),
+        'category_all': MessageLookupByLibrary.simpleMessage('All'),
+        'category_fun': MessageLookupByLibrary.simpleMessage('Fun'),
+        'category_general': MessageLookupByLibrary.simpleMessage('General'),
+        'category_tech': MessageLookupByLibrary.simpleMessage('Tech'),
+        'category_work': MessageLookupByLibrary.simpleMessage('Work'),
+        'home_empty_subtitle': MessageLookupByLibrary.simpleMessage(
+            'Be the first to craft a neo-brutalist poll and spark the conversation.'),
+        'home_empty_title':
+            MessageLookupByLibrary.simpleMessage('No polls here yet'),
         'cancel': MessageLookupByLibrary.simpleMessage('Cancel'),
         'change_language':
             MessageLookupByLibrary.simpleMessage('Change Language'),
         'create_button': MessageLookupByLibrary.simpleMessage('Create'),
+        'nav_home': MessageLookupByLibrary.simpleMessage('Home'),
+        'nav_profile': MessageLookupByLibrary.simpleMessage('Profile'),
+        'nav_search': MessageLookupByLibrary.simpleMessage('Search'),
         'create_poll_header':
             MessageLookupByLibrary.simpleMessage('Create Poll'),
         'default_user_name':
             MessageLookupByLibrary.simpleMessage('Neo Creator'),
         'continue_as_guest':
             MessageLookupByLibrary.simpleMessage('Continue as Guest'),
+        'search_empty': m5,
+        'search_hint':
+            MessageLookupByLibrary.simpleMessage('Search polls and options'),
+        'search_prompt': MessageLookupByLibrary.simpleMessage(
+            'Start typing to discover polls across every brutalist category.'),
+        'search_title': MessageLookupByLibrary.simpleMessage('Search'),
         'dark_mode': MessageLookupByLibrary.simpleMessage('Dark Mode'),
         'dark_mode_off':
             MessageLookupByLibrary.simpleMessage('Dark mode disabled'),
         'dark_mode_on':
             MessageLookupByLibrary.simpleMessage('Dark mode enabled'),
         'created_by': m2,
-        'created_polls': MessageLookupByLibrary.simpleMessage('Created Polls'),
+        'my_polls': MessageLookupByLibrary.simpleMessage('My Polls'),
         'done': MessageLookupByLibrary.simpleMessage('Done'),
         'duration_label': MessageLookupByLibrary.simpleMessage('Duration'),
         'email': MessageLookupByLibrary.simpleMessage('Email'),
@@ -59,6 +78,13 @@ class _MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage('Please enter a question'),
         'generic_error':
             MessageLookupByLibrary.simpleMessage('Something went wrong'),
+        'delete': MessageLookupByLibrary.simpleMessage('Delete'),
+        'delete_poll_message': MessageLookupByLibrary.simpleMessage(
+            'This poll and its votes will be removed.'),
+        'delete_poll_title':
+            MessageLookupByLibrary.simpleMessage('Delete poll?'),
+        'keep_poll': MessageLookupByLibrary.simpleMessage('Keep'),
+        'poll_deleted': MessageLookupByLibrary.simpleMessage('Poll deleted'),
         'get_started': MessageLookupByLibrary.simpleMessage('Get Started'),
         'guest_warning': MessageLookupByLibrary.simpleMessage(
             'You are browsing as a guest. Login to create polls.'),
@@ -109,6 +135,8 @@ class _MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage('Go to login'),
         'profile_guest_title':
             MessageLookupByLibrary.simpleMessage('Create your profile'),
+        'profile_empty_title': MessageLookupByLibrary.simpleMessage(
+            "You haven't created any polls yet."),
         'profile_title': MessageLookupByLibrary.simpleMessage('Profile'),
         'publish': MessageLookupByLibrary.simpleMessage('Publish'),
         'password_strength_label':

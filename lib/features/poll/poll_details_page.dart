@@ -8,6 +8,7 @@ import '../../models/user_vote.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/poll_providers.dart';
 import '../../repositories/mock_poll_repository.dart';
+import '../../theme/app_theme.dart';
 import '../../widgets/poll_option_tile.dart';
 import '../auth/auth_page.dart';
 
@@ -24,6 +25,49 @@ class PollDetailsPage extends ConsumerStatefulWidget {
 
 class _PollDetailsPageState extends ConsumerState<PollDetailsPage> {
   String? _selectedOptionId;
+
+  Future<void> _confirmDelete(Poll poll) async {
+    final currentUser = ref.read(currentUserProvider);
+    if (currentUser == null) {
+      return;
+    }
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(l10n.deletePollTitle),
+        content: Text(l10n.deletePollMessage),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.keepPoll),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) {
+      return;
+    }
+    await ref
+        .read(mockPollRepositoryProvider)
+        .deletePoll(poll.id, currentUser.id);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.pollDeleted),
+        backgroundColor: AppTheme.primaryColor,
+      ),
+    );
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/');
+    }
+  }
 
   @override
   void initState() {
@@ -94,13 +138,32 @@ class _PollDetailsPageState extends ConsumerState<PollDetailsPage> {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final bool isGuest = ref.watch(isGuestProvider);
+    final currentUser = ref.watch(currentUserProvider);
 
     final AsyncValue<Poll?> pollState = ref.watch(pollDetailsProvider(widget.pollId));
     final MockPollRepository repository = ref.watch(mockPollRepositoryProvider);
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: Text(l10n.pollDetails),
+        actions: <Widget>[
+          if (currentUser != null &&
+              pollState.valueOrNull?.authorId == currentUser.id)
+            IconButton(
+              onPressed: () {
+                final Poll? poll = pollState.valueOrNull;
+                if (poll != null) {
+                  _confirmDelete(poll);
+                }
+              },
+              icon: const Icon(Icons.delete_outline),
+              tooltip: l10n.delete,
+            ),
+        ],
       ),
       body: pollState.when(
         data: (Poll? poll) {

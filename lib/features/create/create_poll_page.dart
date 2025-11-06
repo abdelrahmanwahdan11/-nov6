@@ -10,6 +10,8 @@ import '../../theme/app_theme.dart';
 import 'poll_settings_page.dart';
 import '../auth/auth_page.dart';
 
+const List<String> _categoryOptions = <String>['Tech', 'Fun', 'Work', 'General'];
+
 class CreatePollPage extends ConsumerStatefulWidget {
   const CreatePollPage({super.key});
 
@@ -28,6 +30,7 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
 
   PollSettingsArguments _settings = const PollSettingsArguments();
   bool _isSaving = false;
+  String _selectedCategory = _categoryOptions.last;
 
   @override
   void dispose() {
@@ -104,6 +107,7 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
         duration: _settings.duration,
         authorId: currentUser.id,
         authorName: currentUser.name,
+        category: _selectedCategory,
       );
 
       if (!mounted) return;
@@ -169,6 +173,46 @@ class _CreatePollPageState extends ConsumerState<CreatePollPage> {
               TextField(
                 controller: _questionController,
                 decoration: _neoDecoration(l10n.pollQuestionLabel),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.categoryLabel,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: _categoryOptions
+                    .map(
+                      (String category) => ChoiceChip(
+                        label: Text(_categoryLabel(category, l10n)),
+                        selected: _selectedCategory == category,
+                        onSelected: (bool selected) {
+                          if (!selected) {
+                            return;
+                          }
+                          setState(() {
+                            _selectedCategory = category;
+                          });
+                        },
+                        labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: _selectedCategory == category
+                                ? AppTheme.primaryColor
+                                : Colors.black,
+                            width: 3,
+                          ),
+                        ),
+                        selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+                        backgroundColor: Colors.white,
+                      ),
+                    )
+                    .toList(),
               ),
               const SizedBox(height: 24),
               ListView.separated(
@@ -258,4 +302,18 @@ InputDecoration _neoDecoration(String label, {String? hintText}) {
       borderSide: const BorderSide(color: AppTheme.primaryColor, width: 3),
     ),
   );
+}
+
+String _categoryLabel(String category, AppLocalizations l10n) {
+  switch (category) {
+    case 'Tech':
+      return l10n.categoryTech;
+    case 'Fun':
+      return l10n.categoryFun;
+    case 'Work':
+      return l10n.categoryWork;
+    case 'General':
+    default:
+      return l10n.categoryGeneral;
+  }
 }

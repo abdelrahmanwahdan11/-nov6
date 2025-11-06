@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -18,7 +19,8 @@ import '../../theme/app_theme.dart';
 import '../../widgets/poll_card.dart';
 import '../auth/auth_page.dart';
 import '../preferences/settings_page.dart';
-import '../profile/user_profile_page.dart';
+
+const List<String> _homeCategories = <String>['All', 'Tech', 'Fun', 'Work', 'General'];
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -180,6 +182,22 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 }
 
+String _homeCategoryLabel(String category, AppLocalizations l10n) {
+  switch (category.toLowerCase()) {
+    case 'tech':
+      return l10n.categoryTech;
+    case 'fun':
+      return l10n.categoryFun;
+    case 'work':
+      return l10n.categoryWork;
+    case 'general':
+      return l10n.categoryGeneral;
+    case 'all':
+    default:
+      return l10n.categoryAll;
+  }
+}
+
 class _HomeBody extends ConsumerWidget {
   const _HomeBody({
     required this.l10n,
@@ -201,142 +219,191 @@ class _HomeBody extends ConsumerWidget {
     final bool isGuest = ref.watch(isGuestProvider);
     final MockPollRepository repository = ref.watch(mockPollRepositoryProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        leadingWidth: 120,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 12, bottom: 12),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width: 2),
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.white,
-            ),
-            child: Center(
-              child: Text(
-                l10n.brandLabel,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-          ),
-        ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => context.goNamed(UserProfilePage.routeName),
-            icon: const Icon(Icons.person_outline),
-          ),
-          Showcase(
-            key: settingsKey,
-            description: l10n.tourSettings,
-            child: IconButton(
-              onPressed: () => context.push(SettingsPage.routePath),
-              icon: const Icon(Icons.settings_outlined),
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            if (isGuest)
+    final String activeCategory = ref.watch(categoryFilterProvider);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 140),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
               Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  border: Border.all(color: Colors.black, width: 3),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.black, width: 2.5),
+                  color: Colors.white,
                 ),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        l10n.guestWarning,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => context.go(AuthPage.routePath),
-                      child: Text(l10n.login),
-                    ),
-                  ],
+                child: Text(
+                  l10n.brandLabel,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
-            Text(
-              l10n.collectIdeasTitle,
-              style: Theme.of(context).textTheme.displayLarge,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              l10n.collectIdeasSubtitle,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 20),
+              const Spacer(),
+              Showcase(
+                key: settingsKey,
+                description: l10n.tourSettings,
+                child: IconButton(
+                  onPressed: () => context.push(SettingsPage.routePath),
+                  icon: const Icon(Icons.settings_outlined),
+                ),
+              ),
+            ],
+          ),
+          if (isGuest)
             Container(
-              height: 220,
+              margin: const EdgeInsets.only(top: 16, bottom: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
               decoration: BoxDecoration(
-                color: AppTheme.mustard,
-                borderRadius: BorderRadius.circular(24),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: Colors.black, width: 3),
               ),
-              padding: const EdgeInsets.all(16),
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: SvgPicture.asset(
-                      'assets/illustrations/thinker.svg',
-                      fit: BoxFit.contain,
+                    child: Text(
+                      l10n.guestWarning,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          l10n.heroBadge,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 18,
-                              ),
-                        ),
-                        const SizedBox(height: 12),
-                        Showcase(
-                          key: createKey,
-                          description: l10n.tourCreate,
-                          child: ElevatedButton(
-                            onPressed: onCreate,
-                            child: Text(l10n.createButton.toUpperCase()),
-                          ),
-                        ),
-                      ],
-                    ),
+                  TextButton(
+                    onPressed: () => context.go(AuthPage.routePath),
+                    child: Text(l10n.login),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 28),
-            Text(
-              l10n.popularPolls,
-              style: Theme.of(context).textTheme.headlineMedium,
+          Text(
+            l10n.collectIdeasTitle,
+            style: Theme.of(context).textTheme.displayLarge,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l10n.collectIdeasSubtitle,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 20),
+          Container(
+            height: 220,
+            decoration: BoxDecoration(
+              color: AppTheme.mustard,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.black, width: 3),
             ),
-            const SizedBox(height: 16),
-            pollsState.when(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: SvgPicture.asset(
+                    'assets/illustrations/thinker.svg',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        l10n.heroBadge,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                            ),
+                      ),
+                      const SizedBox(height: 12),
+                      Showcase(
+                        key: createKey,
+                        description: l10n.tourCreate,
+                        child: ElevatedButton(
+                          onPressed: onCreate,
+                          child: Text(l10n.createButton.toUpperCase()),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            l10n.popularPolls,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: _homeCategories.map((String category) {
+                final bool selected = activeCategory == category;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: ChoiceChip(
+                    label: Text(_homeCategoryLabel(category, l10n)),
+                    selected: selected,
+                    onSelected: (bool value) {
+                      if (!value) {
+                        return;
+                      }
+                      ref.read(categoryFilterProvider.notifier).state = category;
+                    },
+                    labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      side: BorderSide(
+                        color: selected ? AppTheme.primaryColor : Colors.black,
+                        width: 3,
+                      ),
+                    ),
+                    selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+                    backgroundColor: Colors.white,
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: pollsState.when(
               data: (List<Poll> polls) {
                 if (polls.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 32),
-                    child: Text(l10n.noPolls),
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        SvgPicture.asset(
+                          'assets/illustrations/cat_sleep.svg',
+                          height: 160,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          l10n.homeEmptyTitle,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.homeEmptySubtitle,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   );
                 }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
+                return ListView.separated(
                   itemCount: polls.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 16),
+                  padding: const EdgeInsets.only(top: 8, bottom: 200),
                   itemBuilder: (BuildContext context, int index) {
                     final Poll poll = polls[index];
                     final String authorName =
@@ -357,14 +424,18 @@ class _HomeBody extends ConsumerWidget {
                   },
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (Object error, StackTrace stack) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 32),
+              loading: () => const Center(
+                child: SpinKitThreeBounce(
+                  color: AppTheme.primaryColor,
+                  size: 26,
+                ),
+              ),
+              error: (Object error, StackTrace stack) => Center(
                 child: Text(l10n.errorMessage(error.toString())),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

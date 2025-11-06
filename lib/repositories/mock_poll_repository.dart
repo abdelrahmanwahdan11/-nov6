@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:hive/hive.dart';
@@ -52,6 +53,7 @@ class MockPollRepository {
         ],
         authorId: defaultAuthorId,
         endDate: now.add(const Duration(hours: 6)),
+        category: 'Tech',
       ),
       Poll(
         id: 'poll-2',
@@ -63,6 +65,7 @@ class MockPollRepository {
         ],
         authorId: defaultAuthorId,
         endDate: now.add(const Duration(hours: 12)),
+        category: 'Fun',
       ),
     ];
 
@@ -72,15 +75,33 @@ class MockPollRepository {
   }
 
   Future<List<Poll>> getPopularPolls() async {
-    final List<Poll> polls = _pollsBox.values.toList()
-      ..sort((Poll a, Poll b) => a.endDate.compareTo(b.endDate));
-    return polls;
+    return _filterByCategory('All');
+  }
+
+  Stream<List<Poll>> getPolls(String categoryFilter) async* {
+    await Future<void>.delayed(const Duration(seconds: 1));
+    yield _filterByCategory(categoryFilter);
+    yield* _pollsBox.watch().map((_) => _filterByCategory(categoryFilter));
+  }
+
+  Stream<List<Poll>> getPollsByAuthorStream(String authorId) async* {
+    yield _pollsByAuthor(authorId);
+    yield* _pollsBox.watch().map((_) => _pollsByAuthor(authorId));
   }
 
   Future<List<Poll>> getPollsByAuthor(String authorId) async {
-    return _pollsBox.values
-        .where((Poll poll) => poll.authorId == authorId)
-        .toList();
+    return _pollsByAuthor(authorId);
+  }
+
+  Stream<List<Poll>> searchPolls(String query) async* {
+    final String normalized = query.trim().toLowerCase();
+    if (normalized.isEmpty) {
+      yield <Poll>[];
+      return;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    yield _searchPolls(normalized);
+    yield* _pollsBox.watch().map((_) => _searchPolls(normalized));
   }
 
   UserMock? getUserById(String id) {
@@ -124,6 +145,7 @@ class MockPollRepository {
     required Duration duration,
     required String authorId,
     required String authorName,
+    required String category,
   }) async {
     final String pollId = 'poll-${DateTime.now().millisecondsSinceEpoch}';
     final DateTime endDate = DateTime.now().add(duration);
@@ -144,6 +166,7 @@ class MockPollRepository {
       options: options,
       authorId: authorId,
       endDate: endDate,
+      category: category,
     );
 
     await ensureUserMock(id: authorId, name: authorName);
@@ -189,5 +212,62 @@ class MockPollRepository {
         selectedOptionId: optionId,
       ),
     );
+  }
+
+  Future<void> deletePoll(String pollId, String currentUserId) async {
+    final Poll? poll = _pollsBox.get(pollId);
+    if (poll == null) {
+      return;
+    }
+    if (poll.authorId != currentUserId) {
+      throw StateError('Not authorized to delete this poll');
+    }
+    await _pollsBox.delete(pollId);
+
+    final List<dynamic> keysToDelete = _votesBox.keys
+        .where((dynamic key) =>
+            (_votesBox.get(key) as UserVote?)?.pollId == pollId)
+        .toList();
+    for (final dynamic key in keysToDelete) {
+      await _votesBox.delete(key);
+    }
+  }
+
+  List<Poll> _filterByCategory(String categoryFilter) {
+    final String normalized = categoryFilter.toLowerCase();
+    Iterable<Poll> values = _pollsBox.values;
+    if (normalized != 'all') {
+      values = values.where(
+        (Poll poll) => poll.category.toLowerCase() == normalized,
+      );
+    }
+    return _sortPolls(values);
+  }
+
+  List<Poll> _pollsByAuthor(String authorId) {
+    return _sortPolls(
+      _pollsBox.values.where((Poll poll) => poll.authorId == authorId),
+    );
+  }
+
+  List<Poll> _searchPolls(String normalizedQuery) {
+    return _sortPolls(
+      _pollsBox.values.where((Poll poll) {
+        final String question = poll.question.toLowerCase();
+        if (question.contains(normalizedQuery)) {
+          return true;
+        }
+        return poll.options.any(
+          (PollOption option) =>
+              option.text.toLowerCase().contains(normalizedQuery),
+        );
+      }),
+    );
+  }
+
+  List<Poll> _sortPolls(Iterable<Poll> polls) {
+    final List<Poll> sorted = List<Poll>.from(polls);
+    sorted.sort((Poll a, Poll b) => a.endDate.compareTo(b.endDate));
+    return sorted;
   }
 }

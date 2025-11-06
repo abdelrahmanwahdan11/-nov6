@@ -6,11 +6,13 @@ import '../features/auth/auth_page.dart';
 import '../features/create/create_poll_page.dart';
 import '../features/create/poll_settings_page.dart';
 import '../features/home/home_page.dart';
+import '../features/navigation/app_shell.dart';
 import '../features/onboarding/onboarding_page.dart';
 import '../features/poll/poll_details_page.dart';
 import '../features/poll/poll_results_page.dart';
 import '../features/preferences/settings_page.dart';
 import '../features/profile/user_profile_page.dart';
+import '../features/search/search_page.dart';
 import '../features/splash/splash_page.dart';
 import '../providers/app_providers.dart';
 import '../repositories/mock_auth_repository.dart';
@@ -43,12 +45,33 @@ final Provider<GoRouter> appRouterProvider = Provider<GoRouter>((ref) {
           return const NoTransitionPage<void>(child: AuthPage());
         },
       ),
-      GoRoute(
-        path: '/',
-        name: HomePage.routeName,
-        pageBuilder: (BuildContext context, GoRouterState state) {
-          return const NoTransitionPage<void>(child: HomePage());
+      ShellRoute(
+        builder: (BuildContext context, GoRouterState _, Widget child) {
+          return AppShell(child: child);
         },
+        routes: <RouteBase>[
+          GoRoute(
+            path: '/',
+            name: HomePage.routeName,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(child: HomePage());
+            },
+          ),
+          GoRoute(
+            path: '/search',
+            name: SearchPage.routeName,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(child: SearchPage());
+            },
+          ),
+          GoRoute(
+            path: '/profile',
+            name: UserProfilePage.routeName,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(child: UserProfilePage());
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/create',
@@ -94,13 +117,6 @@ final Provider<GoRouter> appRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(
-        path: '/profile',
-        name: UserProfilePage.routeName,
-        pageBuilder: (BuildContext context, GoRouterState state) {
-          return const NoTransitionPage<void>(child: UserProfilePage());
-        },
-      ),
-      GoRoute(
         path: SettingsPage.routePath,
         name: SettingsPage.routeName,
         pageBuilder: (BuildContext context, GoRouterState state) {
@@ -115,8 +131,12 @@ final Provider<GoRouter> appRouterProvider = Provider<GoRouter>((ref) {
       final bool canAccessApp = isAuthed || isGuest;
 
       final String location = state.matchedLocation;
-      final bool goingHome =
-          location == '/' || location.startsWith('/poll') || location == '/create' || location.startsWith('/profile') || location == SettingsPage.routePath;
+      final bool goingHome = location == '/' ||
+          location.startsWith('/poll') ||
+          location == '/create' ||
+          location.startsWith('/profile') ||
+          location.startsWith('/search') ||
+          location == SettingsPage.routePath;
       if (!canAccessApp && goingHome) {
         return AuthPage.routePath;
       }

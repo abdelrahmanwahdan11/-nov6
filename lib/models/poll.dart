@@ -12,6 +12,7 @@ class Poll extends HiveObject {
     required this.options,
     required this.authorId,
     required this.endDate,
+    required this.category,
   });
 
   @HiveField(0)
@@ -28,4 +29,7 @@ class Poll extends HiveObject {
 
   @HiveField(4)
   DateTime endDate;
+
+  @HiveField(5)
+  String category;
 }

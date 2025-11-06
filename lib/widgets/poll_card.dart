@@ -9,10 +9,16 @@ import '../repositories/mock_poll_repository.dart';
 import '../theme/app_theme.dart';
 
 class PollCard extends StatelessWidget {
-  const PollCard({super.key, required this.poll, required this.authorName});
+  const PollCard({
+    super.key,
+    required this.poll,
+    required this.authorName,
+    this.onDelete,
+  });
 
   final Poll poll;
   final String authorName;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -38,17 +44,34 @@ class PollCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                poll.question,
-                style: textTheme.headlineMedium,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      poll.question,
+                      style: textTheme.headlineMedium,
+                    ),
+                  ),
+                  if (onDelete != null)
+                    IconButton(
+                      onPressed: onDelete,
+                      icon: const Icon(Icons.delete_outline),
+                      tooltip: l10n.delete,
+                    ),
+                ],
               ),
               const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: <Widget>[
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.mustard,
                       border: Border.all(color: Colors.black, width: 2),
@@ -58,6 +81,23 @@ class PollCard extends StatelessWidget {
                       l10n.createdBy(authorName),
                       style: textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      _categoryLabel(poll.category, l10n),
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
@@ -83,5 +123,19 @@ class PollCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+String _categoryLabel(String category, AppLocalizations l10n) {
+  switch (category.toLowerCase()) {
+    case 'tech':
+      return l10n.categoryTech;
+    case 'fun':
+      return l10n.categoryFun;
+    case 'work':
+      return l10n.categoryWork;
+    case 'general':
+    default:
+      return l10n.categoryGeneral;
   }
 }

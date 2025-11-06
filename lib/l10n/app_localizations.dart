@@ -51,6 +51,21 @@ class AppLocalizations {
         name: 'create_button',
       );
 
+  String get navHome => Intl.message(
+        'Home',
+        name: 'nav_home',
+      );
+
+  String get navSearch => Intl.message(
+        'Search',
+        name: 'nav_search',
+      );
+
+  String get navProfile => Intl.message(
+        'Profile',
+        name: 'nav_profile',
+      );
+
   String get pollDetails => Intl.message(
         'Poll Details',
         name: 'poll_details',
@@ -167,9 +182,14 @@ class AppLocalizations {
         name: 'profile_guest_login',
       );
 
-  String get createdPolls => Intl.message(
-        'Created Polls',
-        name: 'created_polls',
+  String get profileEmptyTitle => Intl.message(
+        "You haven't created any polls yet.",
+        name: 'profile_empty_title',
+      );
+
+  String get myPolls => Intl.message(
+        'My Polls',
+        name: 'my_polls',
       );
 
   String get untitledPoll => Intl.message(
@@ -217,6 +237,41 @@ class AppLocalizations {
   String get collectIdeasSubtitle => Intl.message(
         'Collect feedback with punchy brutalist polls.',
         name: 'collect_ideas_subtitle',
+      );
+
+  String get categoryAll => Intl.message(
+        'All',
+        name: 'category_all',
+      );
+
+  String get categoryTech => Intl.message(
+        'Tech',
+        name: 'category_tech',
+      );
+
+  String get categoryFun => Intl.message(
+        'Fun',
+        name: 'category_fun',
+      );
+
+  String get categoryWork => Intl.message(
+        'Work',
+        name: 'category_work',
+      );
+
+  String get categoryGeneral => Intl.message(
+        'General',
+        name: 'category_general',
+      );
+
+  String get homeEmptyTitle => Intl.message(
+        'No polls here yet',
+        name: 'home_empty_title',
+      );
+
+  String get homeEmptySubtitle => Intl.message(
+        'Be the first to craft a neo-brutalist poll and spark the conversation.',
+        name: 'home_empty_subtitle',
       );
 
   String get brandLabel => Intl.message(
@@ -269,6 +324,28 @@ class AppLocalizations {
   String get continueAsGuest => Intl.message(
         'Continue as Guest',
         name: 'continue_as_guest',
+      );
+
+  String get searchTitle => Intl.message(
+        'Search',
+        name: 'search_title',
+      );
+
+  String get searchHint => Intl.message(
+        'Search polls and options',
+        name: 'search_hint',
+      );
+
+  String get searchPrompt => Intl.message(
+        'Start typing to discover polls across every brutalist category.',
+        name: 'search_prompt',
+      );
+
+  String searchEmpty(String query) => Intl.message(
+        'No results for "{query}"',
+        name: 'search_empty',
+        args: <Object>[query],
+        examples: const <String, Object>{'query': 'design'},
       );
 
   String get passwordStrengthLabel => Intl.message(
@@ -324,6 +401,31 @@ class AppLocalizations {
   String get genericError => Intl.message(
         'Something went wrong',
         name: 'generic_error',
+      );
+
+  String get delete => Intl.message(
+        'Delete',
+        name: 'delete',
+      );
+
+  String get deletePollTitle => Intl.message(
+        'Delete poll?',
+        name: 'delete_poll_title',
+      );
+
+  String get deletePollMessage => Intl.message(
+        'This poll and its votes will be removed.',
+        name: 'delete_poll_message',
+      );
+
+  String get keepPoll => Intl.message(
+        'Keep',
+        name: 'keep_poll',
+      );
+
+  String get pollDeleted => Intl.message(
+        'Poll deleted',
+        name: 'poll_deleted',
       );
 
   String get loginRequiredTitle => Intl.message(

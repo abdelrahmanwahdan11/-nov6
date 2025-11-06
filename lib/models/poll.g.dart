@@ -19,13 +19,14 @@ class PollAdapter extends TypeAdapter<Poll> {
       options: (fields[2] as List).cast<PollOption>(),
       authorId: fields[3] as String,
       endDate: fields[4] as DateTime,
+      category: (fields[5] as String?) ?? 'General',
     );
   }
 
   @override
   void write(BinaryWriter writer, Poll obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,6 +36,8 @@ class PollAdapter extends TypeAdapter<Poll> {
       ..writeByte(3)
       ..write(obj.authorId)
       ..writeByte(4)
-      ..write(obj.endDate);
+      ..write(obj.endDate)
+      ..writeByte(5)
+      ..write(obj.category);
   }
 }

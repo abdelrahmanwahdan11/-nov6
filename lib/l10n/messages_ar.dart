@@ -13,6 +13,7 @@ class _MessageLookup extends MessageLookupByLibrary {
   static String m2(Object author) => 'بواسطة $author';
   static String m3(Object hours) => 'متبقي $hoursس';
   static String m4(Object message) => 'خطأ $message';
+  static String m5(Object query) => 'لا توجد نتائج لـ "$query"';
 
   @override
   final Map<String, Function> messages = _notInlinedMessages();
@@ -34,22 +35,39 @@ class _MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage('اجمع الأفكار!'),
         'collect_ideas_subtitle': MessageLookupByLibrary.simpleMessage(
             'اجمع الآراء بلمسة بروتاليست جريئة.'),
+        'category_all': MessageLookupByLibrary.simpleMessage('الكل'),
+        'category_fun': MessageLookupByLibrary.simpleMessage('مرح'),
+        'category_general': MessageLookupByLibrary.simpleMessage('عام'),
+        'category_tech': MessageLookupByLibrary.simpleMessage('تقنية'),
+        'category_work': MessageLookupByLibrary.simpleMessage('عمل'),
+        'home_empty_subtitle': MessageLookupByLibrary.simpleMessage(
+            'كن أول من ينشئ استطلاعاً بطابع نيوبروتاليستي ويبدأ الحوار.'),
+        'home_empty_title':
+            MessageLookupByLibrary.simpleMessage('لا توجد استطلاعات بعد'),
         'cancel': MessageLookupByLibrary.simpleMessage('إلغاء'),
         'change_language':
             MessageLookupByLibrary.simpleMessage('تغيير اللغة'),
         'create_button': MessageLookupByLibrary.simpleMessage('إنشاء'),
+        'nav_home': MessageLookupByLibrary.simpleMessage('الرئيسية'),
+        'nav_profile': MessageLookupByLibrary.simpleMessage('الملف الشخصي'),
+        'nav_search': MessageLookupByLibrary.simpleMessage('بحث'),
         'create_poll_header':
             MessageLookupByLibrary.simpleMessage('إنشاء استطلاع'),
         'default_user_name':
             MessageLookupByLibrary.simpleMessage('مبدع نيو'),
         'continue_as_guest':
             MessageLookupByLibrary.simpleMessage('المتابعة كضيف'),
+        'search_empty': m5,
+        'search_hint': MessageLookupByLibrary.simpleMessage(
+            'ابحث في الاستطلاعات والخيارات'),
+        'search_prompt': MessageLookupByLibrary.simpleMessage(
+            'ابدأ بالكتابة لاستكشاف الاستطلاعات في جميع الفئات.'),
+        'search_title': MessageLookupByLibrary.simpleMessage('بحث'),
         'dark_mode': MessageLookupByLibrary.simpleMessage('الوضع الليلي'),
         'dark_mode_off': MessageLookupByLibrary.simpleMessage('الوضع الليلي متوقف'),
         'dark_mode_on': MessageLookupByLibrary.simpleMessage('الوضع الليلي مفعل'),
         'created_by': m2,
-        'created_polls':
-            MessageLookupByLibrary.simpleMessage('الاستطلاعات المنشأة'),
+        'my_polls': MessageLookupByLibrary.simpleMessage('استطلاعاتي'),
         'done': MessageLookupByLibrary.simpleMessage('تم'),
         'duration_label': MessageLookupByLibrary.simpleMessage('المدة'),
         'email': MessageLookupByLibrary.simpleMessage('البريد الإلكتروني'),
@@ -58,6 +76,13 @@ class _MessageLookup extends MessageLookupByLibrary {
         'enter_question_error':
             MessageLookupByLibrary.simpleMessage('يرجى إدخال سؤال'),
         'generic_error': MessageLookupByLibrary.simpleMessage('حدث خطأ ما'),
+        'delete': MessageLookupByLibrary.simpleMessage('حذف'),
+        'delete_poll_message': MessageLookupByLibrary.simpleMessage(
+            'سيتم حذف هذا الاستطلاع وجميع الأصوات.'),
+        'delete_poll_title':
+            MessageLookupByLibrary.simpleMessage('حذف الاستطلاع؟'),
+        'keep_poll': MessageLookupByLibrary.simpleMessage('إبقاء'),
+        'poll_deleted': MessageLookupByLibrary.simpleMessage('تم حذف الاستطلاع'),
         'get_started': MessageLookupByLibrary.simpleMessage('ابدأ الآن'),
         'guest_warning': MessageLookupByLibrary.simpleMessage(
             'أنت تتصفح كضيف. سجل الدخول لإنشاء الاستطلاعات.'),
@@ -112,6 +137,8 @@ class _MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage('اذهب لتسجيل الدخول'),
         'profile_guest_title':
             MessageLookupByLibrary.simpleMessage('أنشئ ملفك الشخصي'),
+        'profile_empty_title': MessageLookupByLibrary.simpleMessage(
+            'لم تقم بإنشاء أي استطلاعات بعد.'),
         'profile_title': MessageLookupByLibrary.simpleMessage('الملف الشخصي'),
         'publish': MessageLookupByLibrary.simpleMessage('نشر'),
         'settings': MessageLookupByLibrary.simpleMessage('الإعدادات'),

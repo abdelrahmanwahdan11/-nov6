@@ -15,16 +15,34 @@ final Provider<MockPollRepository> mockPollRepositoryProvider =
   return MockPollRepository(pollsBox, votesBox, usersBox);
 });
 
-class PollListNotifier extends AsyncNotifier<List<Poll>> {
-  @override
-  Future<List<Poll>> build() {
-    final MockPollRepository repository = ref.watch(mockPollRepositoryProvider);
-    return repository.getPopularPolls();
-  }
-}
+final StateProvider<String> categoryFilterProvider =
+    StateProvider<String>((ref) => 'All');
 
-final AsyncNotifierProvider<PollListNotifier, List<Poll>> pollListProvider =
-    AsyncNotifierProvider<PollListNotifier, List<Poll>>(PollListNotifier.new);
+final StreamProvider<List<Poll>> pollListProvider =
+    StreamProvider<List<Poll>>((ref) {
+  final String category = ref.watch(categoryFilterProvider);
+  final MockPollRepository repository = ref.watch(mockPollRepositoryProvider);
+  return repository.getPolls(category);
+});
+
+final StateProvider<String> searchQueryProvider =
+    StateProvider<String>((ref) => '');
+
+final StreamProviderFamily<List<Poll>, String> searchResultsProvider =
+    StreamProvider.autoDispose.family<List<Poll>, String>((ref, query) {
+  final MockPollRepository repository = ref.watch(mockPollRepositoryProvider);
+  return repository.searchPolls(query);
+});
+
+final StreamProvider<List<Poll>> myPollsProvider =
+    StreamProvider<List<Poll>>((ref) {
+  final MockPollRepository repository = ref.watch(mockPollRepositoryProvider);
+  final user = ref.watch(currentUserProvider);
+  if (user == null) {
+    return Stream<List<Poll>>.value(<Poll>[]);
+  }
+  return repository.getPollsByAuthorStream(user.id);
+});
 
 class PollDetailsNotifier extends FamilyAsyncNotifier<Poll?, String> {
   @override
@@ -47,15 +65,6 @@ final Provider<UserMock?> userProvider = Provider<UserMock?>((ref) {
         UserMock(id: user.id, name: user.name, avatarUrl: '');
   }
   return repository.getUserById(defaultAuthorId);
-});
-
-final FutureProvider<List<Poll>> userPollsProvider = FutureProvider<List<Poll>>((ref) {
-  final user = ref.watch(currentUserProvider);
-  final MockPollRepository repository = ref.watch(mockPollRepositoryProvider);
-  if (user == null) {
-    return repository.getPollsByAuthor(defaultAuthorId);
-  }
-  return repository.getPollsByAuthor(user.id);
 });
 
 class UserVoteNotifier extends FamilyNotifier<UserVote?, String> {
